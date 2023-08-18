@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/s-bose/project-mgmt-go/app/models"
 
 	"gorm.io/driver/postgres"
@@ -36,8 +37,16 @@ func (d *Database) ConnectDatabase() {
 
 // add newly defined models here
 func (d *Database) Migrate() {
-	if d.db.AutoMigrate(&models.User{}) != nil {
+	if d.Db.AutoMigrate(&models.User{}) != nil {
 		panic("Failed to migrate ORM models")
 	}
 	log.Println("Successfully migrated models")
+}
+
+func InitDatabase() Database {
+	godotenv.Load()
+	database := Database{}
+	database.ConnectDatabase()
+	database.Migrate()
+	return database
 }

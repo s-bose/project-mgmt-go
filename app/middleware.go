@@ -6,8 +6,8 @@ import (
 )
 
 func DbMiddleware(db *gorm.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set("dbInstance", db)
-		c.Next()
+	return func(ctx *gin.Context) {
+		ctx.Set("db", db)
+		ctx.Next()
 	}
 }
