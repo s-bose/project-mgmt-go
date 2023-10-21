@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	users "github.com/s-bose/project-mgmt-go/app/service"
+	users "github.com/s-bose/project-mgmt-go/app/services"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
