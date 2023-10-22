@@ -44,8 +44,8 @@ func (d *Database) Migrate() {
 }
 
 func InitDatabase() Database {
+	var database Database
 	godotenv.Load()
-	database := Database{}
 	database.ConnectDatabase()
 	database.Migrate()
 	return database

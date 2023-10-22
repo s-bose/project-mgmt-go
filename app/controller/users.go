@@ -19,12 +19,7 @@ type UserController struct {
 	UserService *users.UserService
 }
 
-func RegisterUser(c *gin.Context) {
-	db, ok := c.MustGet("dbInstance").(*gorm.DB)
-	if !ok {
-		panic("Failed to inject Db")
-	}
-
+func RegisterUser(c *gin.Context, db *gorm.DB) {
 	userService := users.New(db)
 	if err := c.Bind(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -34,7 +29,7 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	user, err := userService.InsertUser(userRequest.Email, userRequest.Password)
+	user, err := userService.InsertUser(userRequest.Name, userRequest.Email, userRequest.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Could not create new user",
@@ -43,7 +38,7 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": user,
+		"data": *user,
 	})
 
 }

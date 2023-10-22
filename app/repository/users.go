@@ -8,7 +8,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(user models.User) error
+	Create(user *models.User) error
 	GetUser(ID uuid.UUID) (*models.User, error)
 	GetUserByEmail(Email string) (*models.User, error)
 	// DeleteUser(ID uuid.UUID) error
@@ -21,8 +21,8 @@ func New(db *gorm.DB) *userRepository {
 	return &userRepository{Db: db}
 }
 
-func (u *userRepository) Create(user models.User) error {
-	return u.Db.Create(&user).Error
+func (u *userRepository) Create(user *models.User) error {
+	return u.Db.Create(user).Error
 }
 
 func (u *userRepository) GetUserByEmail(Email string) (*models.User, error) {

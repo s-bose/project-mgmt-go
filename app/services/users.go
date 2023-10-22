@@ -1,6 +1,8 @@
 package users
 
 import (
+	"time"
+
 	"github.com/s-bose/project-mgmt-go/app/models"
 	"github.com/s-bose/project-mgmt-go/app/repository"
 
@@ -22,14 +24,13 @@ func New(db *gorm.DB) *userService {
 	return &userService{Repository: repository.New(db)}
 }
 
-func (s *userService) InsertUser(Email string, Password string) (*models.User, error) {
+func (s *userService) InsertUser(Name string, Email string, Password string) (*models.User, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(Password), 10)
 	if err != nil {
 		return nil, err
 	}
-	user := models.User{Email: Email, Password: string(hash)}
-	err = s.Repository.Create(user)
-
+	user := models.User{Name: Name, Email: Email, Password: string(hash), CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	err = s.Repository.Create(&user)
 	return &user, err
 }
 
