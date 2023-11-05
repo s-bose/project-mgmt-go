@@ -1,29 +1,33 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
-	users "github.com/s-bose/project-mgmt-go/app/services"
+	"github.com/s-bose/project-mgmt-go/app/services"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-var userRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
+const MAX_AGE = 60 * 60 * 24 * 30 // 30 days
 type UserController struct {
-	UserService *users.UserService
+	Db *gorm.DB
 }
 
-func RegisterUser(c *gin.Context, db *gorm.DB) {
-	userService := users.New(db)
-	if err := c.Bind(&userRequest); err != nil {
+func (u *UserController) RegisterUser(c *gin.Context) {
+
+	var userRequest struct {
+		Name     string `json:"name" binding:"required"`
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	userService := services.CreateUserService(u.Db)
+	if err := c.ShouldBindJSON(&userRequest); err != nil {
+
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to parse request body",
+			"error": err.Error(),
 		})
 
 		return
@@ -43,8 +47,14 @@ func RegisterUser(c *gin.Context, db *gorm.DB) {
 
 }
 
-func LoginUser(c *gin.Context, db *gorm.DB) {
-	userService := users.New(db)
+func (u *UserController) LoginUser(c *gin.Context) {
+
+	var userRequest struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	userService := services.CreateUserService(u.Db)
 
 	if err := c.Bind(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -70,6 +80,21 @@ func LoginUser(c *gin.Context, db *gorm.DB) {
 
 		return
 	}
+
+	// return jwt token as cookie
+	tokenString, err := services.CreateJwtToken((user.ID).String())
+	if err != nil {
+		c.JSON(
+			http.StatusBadRequest, gin.H{
+				"error": err,
+			},
+		)
+		return
+	}
+
+	tokenString = fmt.Sprintf("Bearer %s", tokenString)
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", tokenString, MAX_AGE, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": *user,

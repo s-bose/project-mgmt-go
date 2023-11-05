@@ -1,4 +1,4 @@
-package users
+package services
 
 import (
 	"time"
@@ -20,7 +20,7 @@ type userService struct {
 	Repository repository.UserRepository
 }
 
-func New(db *gorm.DB) *userService {
+func CreateUserService(db *gorm.DB) *userService {
 	return &userService{Repository: repository.New(db)}
 }
 
@@ -29,7 +29,13 @@ func (s *userService) InsertUser(Name string, Email string, Password string) (*m
 	if err != nil {
 		return nil, err
 	}
-	user := models.User{Name: Name, Email: Email, Password: string(hash), CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user := models.User{
+		Name:      Name,
+		Email:     Email,
+		Password:  string(hash),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 	err = s.Repository.Create(&user)
 	return &user, err
 }

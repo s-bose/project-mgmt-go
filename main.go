@@ -17,16 +17,13 @@ func main() {
 		})
 	})
 
+	userController := controller.UserController{Db: database.Db}
 	mainGroup := r.Group("/api")
 	{
 		userGroup := mainGroup.Group("/user")
 		{
-			userGroup.POST("/login", func(c *gin.Context) {
-				controller.LoginUser(c, database.Db)
-			})
-			userGroup.POST("/register", func(c *gin.Context) {
-				controller.RegisterUser(c, database.Db)
-			})
+			userGroup.POST("/login", userController.LoginUser)
+			userGroup.POST("/register", userController.RegisterUser)
 		}
 
 	}
