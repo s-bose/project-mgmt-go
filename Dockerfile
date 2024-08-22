@@ -1,10 +1,11 @@
-FROM golang:1.20-alpine
+FROM golang:1.23-alpine
 
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
+COPY ./wait-for-it.sh ./
 
 RUN go mod download
 

@@ -82,7 +82,7 @@ func (u *UserController) LoginUser(c *gin.Context) {
 	}
 
 	// return jwt token as cookie
-	tokenString, err := services.CreateJwtToken((user.ID).String())
+	tokenString, err := services.CreateAccessToken((user.ID).String())
 	if err != nil {
 		c.JSON(
 			http.StatusBadRequest, gin.H{
@@ -92,9 +92,11 @@ func (u *UserController) LoginUser(c *gin.Context) {
 		return
 	}
 
-	tokenString = fmt.Sprintf("Bearer %s", tokenString)
+	tokenStr, _ := tokenString["access_token"]
+
+	tokenStr = fmt.Sprintf("Bearer %s", tokenStr)
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, MAX_AGE, "", "", false, true)
+	c.SetCookie("Authorization", tokenStr, MAX_AGE, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": *user,

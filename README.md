@@ -1,7 +1,6 @@
 # Go Project Management App
 
-This is a sample Go REST API using Gin and Gorm for a project management app similar to Jira.
-
+This is a sample Go REST API using Gin and Gorm for a project management app.
 ## ERD Diagram
 
 ![](./assets/erd.png)

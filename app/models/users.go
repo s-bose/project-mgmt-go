@@ -13,4 +13,5 @@ type User struct {
 	Password  string    `json:"-" binding:"required"`
 	CreatedAt time.Time `json:"created_at" gorm:"not null;autoUpdateTime:true"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"not null;autoUpdateTime:true"`
+	Deleted   bool      `json:"deleted" gorm:"not null;default:false"`
 }

@@ -37,7 +37,7 @@ func (d *Database) ConnectDatabase() {
 
 // add newly defined models here
 func (d *Database) Migrate() {
-	if d.Db.AutoMigrate(&models.User{}) != nil {
+	if d.Db.Debug().AutoMigrate(&models.User{}) != nil {
 		panic("Failed to migrate ORM models")
 	}
 	log.Println("Successfully migrated models")
