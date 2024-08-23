@@ -16,7 +16,7 @@ type Database struct {
 	Db *gorm.DB
 }
 
-func (d *Database) ConnectDatabase() {
+func ConnectDatabase() *gorm.DB {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("POSTGRES_HOST"),
@@ -32,21 +32,21 @@ func (d *Database) ConnectDatabase() {
 	}
 
 	log.Println("Connected to database")
-	d.Db = database
+	return database
 }
 
 // add newly defined models here
-func (d *Database) Migrate() {
+func Migrate(d *Database) {
 	if d.Db.Debug().AutoMigrate(&models.User{}) != nil {
 		panic("Failed to migrate ORM models")
 	}
 	log.Println("Successfully migrated models")
 }
 
-func InitDatabase() Database {
-	var database Database
+func InitDatabase() *Database {
 	godotenv.Load()
-	database.ConnectDatabase()
-	database.Migrate()
-	return database
+	gormDb := ConnectDatabase()
+	db := &Database{Db: gormDb}
+	Migrate(db)
+	return db
 }

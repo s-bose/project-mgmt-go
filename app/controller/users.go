@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/s-bose/project-mgmt-go/app/services"
+	"github.com/s-bose/project-mgmt-go/app/services/users"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ func (u *UserController) RegisterUser(c *gin.Context) {
 		Password string `json:"password" binding:"required"`
 	}
 
-	userService := services.CreateUserService(u.Db)
+	userService := users.CreateUserService(u.Db)
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -54,7 +54,7 @@ func (u *UserController) LoginUser(c *gin.Context) {
 		Password string `json:"password" binding:"required"`
 	}
 
-	userService := services.CreateUserService(u.Db)
+	userService := users.CreateUserService(u.Db)
 
 	if err := c.Bind(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -82,7 +82,7 @@ func (u *UserController) LoginUser(c *gin.Context) {
 	}
 
 	// return jwt token as cookie
-	tokenString, err := services.CreateAccessToken((user.ID).String())
+	tokenString, err := users.CreateAccessToken((user.ID).String())
 	if err != nil {
 		c.JSON(
 			http.StatusBadRequest, gin.H{

@@ -16,5 +16,5 @@ func AuthorizationMiddleware(c *gin.Context) {
 			},
 		)
 	}
-	
+
 }

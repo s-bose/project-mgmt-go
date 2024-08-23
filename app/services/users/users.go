@@ -1,4 +1,4 @@
-package services
+package users
 
 import (
 	"time"
@@ -48,6 +48,10 @@ func (s *userService) GetUserByEmail(Email string) (*models.User, error) {
 	return user, nil
 }
 
-func (s *userService) ValidateUser(user *models.User, Password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(Password))
+func (s *userService) ValidateUser(User *models.User, Password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(User.Password), []byte(Password))
+}
+
+func (s *userService) DeleteUser(User *models.User, Hard bool) error {
+	return s.Repository.DeleteUser(User.ID, Hard)
 }
