@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/s-bose/project-mgmt-go/app/services/auth"
 	"github.com/s-bose/project-mgmt-go/app/services/users"
 
 	"github.com/gin-gonic/gin"
@@ -58,7 +59,7 @@ func (u *UserController) LoginUser(c *gin.Context) {
 
 	if err := c.Bind(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to parse request body",
+			"error": "failed to parse request body",
 		})
 
 		return
@@ -67,7 +68,7 @@ func (u *UserController) LoginUser(c *gin.Context) {
 	user, err := userService.GetUserByEmail(userRequest.Email)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": "Email not found",
+			"error": "email not found",
 		})
 
 		return
@@ -75,14 +76,14 @@ func (u *UserController) LoginUser(c *gin.Context) {
 
 	if userService.ValidateUser(user, userRequest.Password) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Password does not match",
+			"error": "password does not match",
 		})
 
 		return
 	}
 
 	// return jwt token as cookie
-	tokenString, err := users.CreateAccessToken((user.ID).String())
+	tokens, err := auth.CreateJWTToken((user.ID).String())
 	if err != nil {
 		c.JSON(
 			http.StatusBadRequest, gin.H{
@@ -92,7 +93,8 @@ func (u *UserController) LoginUser(c *gin.Context) {
 		return
 	}
 
-	tokenStr, _ := tokenString["access_token"]
+	tokenStr := tokens["access_token"]
+	// refreshStr := tokens["refresh_token"]
 
 	tokenStr = fmt.Sprintf("Bearer %s", tokenStr)
 	c.SetSameSite(http.SameSiteLaxMode)
